@@ -41,20 +41,21 @@ def download(params):
 def download_no_tqdm(params):
     url = params["url"]
     saveTo = params["saveTo"]
-    dirname = os.path.dirname(saveTo)
-    if dirname != "":
-        os.makedirs(dirname, exist_ok=True)
-    try:
-        req = requests.get(url, stream=True, allow_redirects=True)
-        with open(saveTo, "wb") as f:
-            countToDot = 0
-            for chunk in req.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-                    countToDot += 1
-                    if countToDot % 1024 == 0:
-                        print(".", end="", flush=True)
+    if os.path.exists(saveTo) is False:
+        dirname = os.path.dirname(saveTo)
+        if dirname != "":
+            os.makedirs(dirname, exist_ok=True)
+        try:
+            req = requests.get(url, stream=True, allow_redirects=True)
+            with open(saveTo, "wb") as f:
+                countToDot = 0
+                for chunk in req.iter_content(chunk_size=1024):
+                    if chunk:
+                        f.write(chunk)
+                        countToDot += 1
+                        if countToDot % 1024 == 0:
+                            print(".", end="", flush=True)
 
-        logger.info(f"[Voice Changer] download sample catalog. {saveTo}")
-    except Exception as e:
-        logger.warning(e)
+            logger.info(f"[Voice Changer] download sample catalog. {saveTo}")
+        except Exception as e:
+            logger.warning(e)
